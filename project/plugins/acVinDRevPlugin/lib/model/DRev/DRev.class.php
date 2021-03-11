@@ -1805,4 +1805,5 @@ class DRev extends BaseDRev implements InterfaceProduitsDocument, InterfaceVersi
     public function hasProduitsReserveInterpro($region = null) {
         return (count($this->getProduitsWithReserveInterpro($region)));
     }
+
 }
