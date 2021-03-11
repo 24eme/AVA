@@ -22,12 +22,6 @@ class MouvementLotView extends acCouchdbView
     ->getView($this->design, $this->view);
   }
 
-  public function getByPrelevablePreleveRegionDateIdentifiantDocumentId($campagne, $statut, $region, $date, $declarant_identifiant, $document_id) {
-    return $this->client->startkey(array($declarant_identifiant, $campagne, $statut, $region, $date, $document_id))
-    ->endkey(array($declarant_identifiant, $campagne, $statut, $region, $date, $document_id, array()))
-    ->getView($this->design, $this->view);
-  }
-
   public function getByDeclarantIdentifiant($declarant_identifiant, $campagne = null, $statut = null) {
     $query = array($declarant_identifiant);
     if (!is_null($campagne)) {
