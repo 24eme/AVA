@@ -217,33 +217,22 @@ DRev:
                     type: collection
                     definition:
                       fields:
-                        produit_hash: {  }
-                        produit_libelle: {  }
-                        produit_couleur: { }
-                        volume: { type: float }
                         date: {  }
-                        millesime: {  }
-                        elevage: { }
-                        region: {  }
                         numero_dossier: {  }
                         numero_archive: {  }
-                        numero_logement_operateur: {  }
+                        libelle: {}
+                        detail: {}
+                        region: {}
                         version: {  }
-                        origine_hash: {  }
-                        origine_type: {  }
-                        origine_document_id: {  }
-                        origine_mouvement: {  }
+                        document_ordre: {  }
+                        document_type: {  }
+                        document_id: {  }
+                        lot_unique_id: {  }
+                        lot_hash: {  }
                         declarant_identifiant: {  }
                         declarant_nom: {  }
-                        destination_type: { }
-                        destination_date: { }
-                        details: {}
-                        region: {}
                         campagne: {}
-                        id_document: {  }
-                        statut: {  }
-                        specificite: { required: false }
-                        doc_ordre: {  }
+                        statut: {}
       pieces:
         type: array_collection
         definition:

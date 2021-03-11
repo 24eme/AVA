@@ -119,4 +119,24 @@ class DRevLot extends BaseDRevLot
         return $this->_set('numero_logement_operateur', $numero);
     }
 
+    public function getDocumentType() {
+
+        return DRevClient::TYPE_MODEL;
+    }
+
+    public function getDocumentOrdre() {
+
+        return "01";
+    }
+
+    public function getLibelle() {
+
+        return "";
+    }
+
+    public function getMouvementFreeInstance() {
+
+        return DRevMouvementLots::freeInstance($this->getDocument());
+    }
+
 }

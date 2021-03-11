@@ -172,6 +172,10 @@ $t->is($drev->lots[0]->produit_hash, $valuesRev['lots']['0']['produit_hash'], "L
 $t->is($drev->lots[0]->produit_libelle, $produit1->getLibelle(), "Le libellé du produit du lot 1 est bien enregistré");
 $t->is($drev->lots[0]->millesime, $valuesRev['lots']['0']['millesime'], "Le millesime du lot 1 est bien enregistré");
 $t->is($drev->lots[0]->statut, Lot::STATUT_PRELEVABLE, "Le statut du lot 1 est bien enregistré");
+$t->is($drev->lots[0]->document_fils, null, "Le lot n'a pas de fils");
+$t->ok($drev->lots[0]->isAffectable(), "Le lot est affectable");
+$t->ok(!$drev->lots[0]->isAffecte(), "Le lot est affectable");
+
 
 if($drev->storeEtape(DrevEtapes::ETAPE_VALIDATION)) {
     $drev->save();
@@ -202,36 +206,41 @@ $t->comment("DRev validée");
 $drev->validate();
 $drev->save();
 
-$t->is(count($drev->lots), 1, "La DRev validée ne contient plus que le lot saisi");
-$t->is(count($drev->mouvements_lots->{$drev->identifiant}), 1, "La DRev validée contient le mouvement correspondant au lot saisi");
-foreach ($drev->mouvements_lots->{$drev->identifiant} as $k => $mvt) {
-    break;
-}
+$t->is(count($drev->lots), 1, "La DRev validée contient uniquement le lot saisi");
+$t->ok(!$drev->mouvements_lots->exist($drev->identifiant), "La DRev non validée ODG ne contient pas de mouvement de lots");
 
-$t->is($mvt->produit_hash, $drev->lots[0]->produit_hash, 'Le mouvement a la bonne hash');
-$t->is($mvt->produit_libelle, $drev->lots[0]->produit_libelle, 'Le mouvement a le bon libellé');
-$t->is($mvt->produit_couleur, $drev->lots[0]->getCouleurLibelle(), 'Le mouvement a le bon libellé de couleur');
-$t->is($mvt->volume, $drev->lots[0]->volume, 'Le mouvement a le bon volume');
-$t->is($mvt->date, $drev->lots[0]->date, 'Le mouvement a la bonne date');
-$t->is($mvt->millesime, $drev->lots[0]->millesime, 'Le mouvement a le bon millesime');
-$t->is($mvt->region, '', "Le mouvement a la bonne région");
-$t->is($mvt->numero_logement_operateur, $drev->lots[0]->numero_logement_operateur, 'Le mouvement a le bon numero');
-$t->is($mvt->version, 0, "Le mouvement a la version 0");
-$t->is($mvt->origine_hash, $drev->lots[0]->getHash(), 'Le mouvement a bien comme origine le premier lot');
-$t->is($mvt->origine_type, 'drev', 'le mouvement a bien comme origine une drev');
-$t->is($mvt->origine_mouvement, $mvt->getHash(), 'le mouvement a bien comme origine de mouvement lui même');
-$t->is($mvt->origine_document_id, $drev->_id, 'Le mouvement a la bonne origine de document');
-$t->is($mvt->id_document, $drev->_id, 'Le mouvement a le bon document id');
-$t->is($mvt->declarant_identifiant, $drev->identifiant, 'Le mouvement a le bon identifiant');
-$t->is($mvt->declarant_nom, $drev->declarant->raison_sociale, 'Le mouvement a la bonne raison sociale');
-$t->is($mvt->destination_type, $drev->lots[0]->destination_type, 'Le mouvement a le bon type de destination');
-$t->is($mvt->destination_date, $drev->lots[0]->destination_date, 'Le mouvement a la bonne date de destination');
-$t->is($mvt->details, '', "le mouvement n'a pas de détail car il n'a pas de répartition de cépage");
-$t->is($mvt->statut, Lot::STATUT_PRELEVABLE, "le statut a la bonne valeur");
+$t->comment("DRev Validée ODG");
+
+$drev->validateOdg();
+$drev->save();
+
+$t->is(count($drev->mouvements_lots->get($drev->identifiant)->toArray(true, false)), 2, "La DRev validée contient le mouvement correspondant au lot saisi");
+
+$t->comment("Génération d'un mouvement à partir d'un lot");
+
+$mouvement = $drev->mouvements_lots->get($drev->identifiant)->getFirst();
+$lot = $mouvement->getLot();
+
+$t->is($mouvement->getUnicityKey(), $lot->getUnicityKey()."-".KeyInflector::slugify(Lot::STATUT_REVENDIQUE), "Clé unique des mouvements");
+$t->is($mouvement->date, $lot->date, "Mouvement date");
+$t->is($mouvement->statut, Lot::STATUT_REVENDIQUE, "Mouvement statut");
+$t->is($mouvement->numero_dossier, $lot->numero_dossier, "Mouvement numero de dossier");
+$t->is($mouvement->numero_archive, $lot->numero_archive, "Mouvement numero d'archive");
+$t->is($mouvement->detail, null, "Mouvement détail");
+$t->is($mouvement->libelle, $lot->getLibelle(), "Mouvement libellé");
+$t->is($mouvement->version, $lot->getVersion(), "Mouvement version");
+$t->is($mouvement->document_ordre, "01", "Mouvement numéro d'ordre");
+$t->is($mouvement->document_type, DRevClient::TYPE_MODEL, "Mouvement document type");
+$t->is($mouvement->document_id, $drev->_id, "Mouvement document id");
+$t->is($mouvement->lot_unique_id, $lot->getUnicityKey(), "Mouvement lot unique id");
+$t->is($mouvement->lot_hash, $lot->getHash(), "Mouvement lot has");
+$t->is($mouvement->declarant_identifiant, $drev->identifiant, "Mouvement declarant identifiant");
+$t->is($mouvement->declarant_nom, $drev->declarant->raison_sociale, "Mouvement declarant raison sociale");
+$t->is($mouvement->campagne, $drev->getCampagne(), "Mouvement campagne");
 
 $res = MouvementLotView::getInstance()->getByPrelevablePreleveRegionDateIdentifiantDocumentId($drev->campagne, Lot::STATUT_PRELEVABLE, '', $drev->lots[0]->date, $drev->identifiant, $drev->_id);
 $t->is(count($res->rows), 1, 'on retrouve le mouvement dans la vue MouvementLot');
-$t->is($res->rows[0]->id, $drev->_id, 'le mouvement correspond bien à notre drev');
+$t->is($res->rows[0]->document_id, $drev->_id, 'le mouvement correspond bien à notre drev');
 $drevres = DRevClient::getInstance()->find($res->rows[0]->value->origine_document_id);
 $t->ok($drevres, 'le mouvement pointe bien sur une Drev existante');
 $t->ok( ($drevres instanceof InterfaceMouvementLotsDocument) , 'le mouvement pointe bien vers un document de type InterfaceMouvementLotsDocument');

@@ -279,7 +279,7 @@ abstract class Lot extends acCouchdbDocumentTree
     }
 
     public function getUnicityKey(){
-        return KeyInflector::slugify($this->produit_hash.'/'.$this->volume.'/'.$this->millesime.'/'.$this->numero_dossier.'/'.$this->numero_archive);
+        return KeyInflector::slugify($this->numero_dossier.'-'.$this->numero_archive);
     }
 
     public function getTriHash(array $tri = null) {
@@ -428,5 +428,60 @@ abstract class Lot extends acCouchdbDocumentTree
         return $lot;
     }
 
+    abstract public function getMouvementFreeInstance();
+    abstract public function getLibelle();
+
+    public function getUniqueId(){
+        return KeyInflector::slugify($this->numero_dossier.'-'.$this->numero_archive);
+    }
+
+
+    public function getMouvement($statut) {
+        $mouvement = $this->getMouvementFreeInstance();
+
+        $mouvement->date = $this->date;
+        $mouvement->numero_dossier = $this->numero_dossier;
+        $mouvement->numero_archive = $this->numero_archive;
+        $mouvement->detail = $this->produit_hash;
+        $mouvement->libelle = $this->getLibelle();
+        $mouvement->detail = null;
+        $mouvement->region = '';
+        $mouvement->version = $this->getVersion();
+        $mouvement->document_ordre = $this->getDocumentOrdre();
+        $mouvement->document_type = $this->getDocumentType();
+        $mouvement->document_id = $this->getDocument()->_id;
+        $mouvement->lot_unique_id = $this->getUniqueId();
+        $mouvement->lot_hash = $this->getHash();
+        $mouvement->declarant_identifiant = $this->getDocument()->identifiant;
+        $mouvement->declarant_nom = $this->getDocument()->declarant->raison_sociale;
+        $mouvement->campagne = $this->getCampagne();
+        $mouvement->statut = $statut;
+
+        return $mouvement;
+    }
+
+    abstract public function getDocumentOrdre();
+
+    abstract public function getDocumentType();
+
+    public function getVersion() {
+
+        return $this->getDocument()->getVersion();
+    }
+
+    public function isAffectable() {
+
+        return $this->exist('affectable') && $this->affectable;
+    }
+
+    public function isAffecte() {
+
+        return $this->exist('document_fils') && $this->document_fils;
+    }
+
+    public function getCampagne() {
+
+        return $this->getDocument()->getCampagne();
+    }
 
 }
