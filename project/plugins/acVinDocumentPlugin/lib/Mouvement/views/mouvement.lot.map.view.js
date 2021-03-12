@@ -7,8 +7,8 @@ function (doc) {
       mouvement = doc.mouvements_lots[identifiant][key];
 
       emit([
-        mouvement.statut
-      ], mouvement);
+        mouvement.statut, mouvement.lot_unique_id
+      ], doc.lots[mouvement.lot_hash.replace("/lots/", "")*1]);
     }
   }
 }

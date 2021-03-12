@@ -59,7 +59,7 @@ $drev->validate();
 $drev->validateOdg();
 $drev->save();
 $t->comment($drev->_id);
-$res_mvt = MouvementLotView::getInstance()->getByPrelevablePreleveRegionDateIdentifiantDocumentId($drev->campagne, Lot::STATUT_AFFECTABLE, '', $drev->lots[0]->date, $drev->identifiant, $drev->_id);
+$res_mvt = MouvementLotView::getInstance()->getByStatut(Lot::STATUT_AFFECTABLE);
 $t->is(count($res_mvt->rows), 2, 'on a au moins un mouvement de lot prélevable');
 
 $t->comment("Test de la dégustation : $docid");
@@ -90,11 +90,11 @@ $lot_key2 = null;
 
 foreach($res_mvt->rows as $item) {
     if (!$lot_key1) {
-        $lot_key1 = Lot::generateMvtKey($item->value);
+        $lot_key1 = $item->key[MouvementLotView::KEY_LOT_UNIQUE_ID];
         continue;
     }
     if (!$lot_key2) {
-        $lot_key2 = Lot::generateMvtKey($item->value);
+        $lot_key2 = $item->key[MouvementLotView::KEY_LOT_UNIQUE_ID];
         $lot_mvt2 = $item->value;
         break;
     }
@@ -122,12 +122,11 @@ $t->is($degustation->lots[0]->declarant_identifiant, $drev->identifiant, 'Le lot
 $t->is($degustation->lots[0]->declarant_nom, $drev->declarant->raison_sociale, 'Le lot a le bon nom de declarant');
 $t->is($degustation->lots[0]->statut, Lot::STATUT_ATTENTE_PRELEVEMENT, 'Le lot a le bon statut');
 $degustation->generateMouvementsLots();
-$t->is(count($degustation->mouvements_lots->{$drev->identifiant}), 2, 'La génération de mouvement a produit deux mouvements');
-foreach($degustation->mouvements_lots->{$drev->identifiant} as $k => $mvt) {
+$t->is(count($degustation->mouvements_lots->get($drev->identifiant)->toArray(true, false)), 2, 'La génération de mouvement a produit deux mouvements');
+foreach($degustation->mouvements_lots->get($drev->identifiant) as $k => $mvt) {
     $mouvement[$mvt->statut] = $mvt;
 }
-$t->is($mouvement[Lot::STATUT_ATTENTE_PRELEVEMENT]->id_document, $degustation->_id, 'le mvt lot permet de retrouver la degustation via id_document');
-$t->is($mouvement[Lot::STATUT_ATTENTE_PRELEVEMENT]->origine_document_id, $degustation->_id, 'le mvt lot issu de la degustation est bien l\'id de la degustation');
+$t->is($mouvement[Lot::STATUT_ATTENTE_PRELEVEMENT]->document_id, $degustation->_id, 'le mvt lot permet de retrouver la degustation via id_document');
 $t->is($mouvement[Lot::STATUT_ATTENTE_PRELEVEMENT]->statut, Lot::STATUT_ATTENTE_PRELEVEMENT, "le mvt lot du lot est en attente de prélèvement");
 $t->is($mouvement[Lot::STATUT_AFFECTE_DEST]->statut, Lot::STATUT_AFFECTE_DEST, "le deuxième mvt lot du lot est affecté destination");
 

@@ -452,8 +452,8 @@ abstract class Lot extends acCouchdbDocumentTree
         $mouvement->document_id = $this->getDocument()->_id;
         $mouvement->lot_unique_id = $this->getUniqueId();
         $mouvement->lot_hash = $this->getHash();
-        $mouvement->declarant_identifiant = $this->getDocument()->identifiant;
-        $mouvement->declarant_nom = $this->getDocument()->declarant->raison_sociale;
+        $mouvement->declarant_identifiant = $this->declarant_identifiant;
+        $mouvement->declarant_nom = $this->declarant_nom;
         $mouvement->campagne = $this->getCampagne();
         $mouvement->statut = $statut;
 

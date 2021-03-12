@@ -3,6 +3,7 @@
 class MouvementLotView extends acCouchdbView
 {
   const KEY_STATUT = 0;
+  const KEY_LOT_UNIQUE_ID = 1;
 
   const VALUE_LOT = 0;
 

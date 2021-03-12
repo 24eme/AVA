@@ -61,11 +61,12 @@ Degustation:
               definition:
                 fields:
                   '*':
-                    class: DRevMouvementLots
+                    class: DegustationMouvementLots
                     inheritance: MouvementLots
                     type: collection
                     definition:
                       fields:
+                        id_document: { required: false }
                         date: {  }
                         numero_dossier: {  }
                         numero_archive: {  }

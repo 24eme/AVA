@@ -216,35 +216,35 @@ class Degustation extends BaseDegustation implements InterfacePieceDocument, Int
             switch($lot->statut) {
                 case Lot::STATUT_CONFORME:
                 case Lot::STATUT_NONCONFORME:
-                    $this->addMouvementLot($lot, $lot->statut);
+                    $this->addMouvementLot($lot->getMouvement($lot->statut));
 
                 case Lot::STATUT_DEGUSTE:
-                    $this->addMouvementLot($lot, Lot::STATUT_DEGUSTE);
+                    $this->addMouvementLot($lot->getMouvement(Lot::STATUT_DEGUSTE));
 
                 case Lot::STATUT_ANONYMISE:
-                    $this->addMouvementLot($lot, Lot::STATUT_ANONYMISE);
+                    $this->addMouvementLot($lot->getMouvement(Lot::STATUT_ANONYMISE));
 
                 case Lot::STATUT_ATTABLE:
-                    $this->addMouvementLot($lot, Lot::STATUT_ATTABLE);
+                    $this->addMouvementLot($lot->getMouvement(Lot::STATUT_ATTABLE));
 
                 case Lot::STATUT_PRELEVE:
-                    $this->addMouvementLot($lot, Lot::STATUT_PRELEVE);
+                    $this->addMouvementLot($lot->getMouvement(Lot::STATUT_PRELEVE));
 
                 case Lot::STATUT_ATTENTE_PRELEVEMENT:
-                    $this->addMouvementLot($lot, Lot::STATUT_ATTENTE_PRELEVEMENT);
+                    $this->addMouvementLot($lot->getMouvement(Lot::STATUT_ATTENTE_PRELEVEMENT));
 
                 case Lot::STATUT_AFFECTE_DEST:
-                    $this->addMouvementLot($lot, Lot::STATUT_AFFECTE_DEST);
+                    $this->addMouvementLot($lot->getMouvement(Lot::STATUT_AFFECTE_DEST));
 
                 default:
                     break;
             }
 
             if ($lot->statut === Lot::STATUT_NONCONFORME && $lot->isAffectable()) {
-                $this->addMouvementLot($lot, Lot::STATUT_AFFECTABLE);
-                $this->addMouvementLot($lot, Lot::STATUT_AFFECTE_SRC);
+                $this->addMouvementLot($lot->getMouvement(Lot::STATUT_AFFECTABLE));
+                $this->addMouvementLot($lot->getMouvement(Lot::STATUT_AFFECTE_SRC));
             } elseif($lot->statut === Lot::STATUT_NONCONFORME) {
-                $this->addMouvementLot($lot, Lot::STATUT_MANQUEMENT_EN_ATTENTE);
+                $this->addMouvementLot($lot->getMouvement(Lot::STATUT_MANQUEMENT_EN_ATTENTE));
             }
         }
     }
@@ -285,7 +285,7 @@ class Degustation extends BaseDegustation implements InterfacePieceDocument, Int
 	 public function setLotsFromMvtKeys($keys, $statut){
 		 $this->remove('lots');
 		 $this->add('lots');
-		 $mvts = $this->getMvtLotsPrelevables();
+		 $mvts = DegustationClient::getInstance()->getLotsPrelevables();
 		 foreach($keys as $key => $activated) {
 			 if (!$activated) {
 				continue;
