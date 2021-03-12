@@ -5,8 +5,7 @@ class degustationActions extends sfActions {
     public function executeIndex(sfWebRequest $request) {
         $newDegutation = new Degustation();
         $this->form = new DegustationCreationForm($newDegutation);
-        $newDegutation->getMvtLotsPrelevables();
-        $this->lotsPrelevables = $newDegutation->getLotsPrelevablesSortByDate();
+        $this->lotsPrelevables = DegustationClient::getInstance()->getLotsPrelevables();
         $this->lotsElevages = MouvementLotView::getInstance()->getByStatut(null, Lot::STATUT_ELEVAGE)->rows;
         $this->lotsManquements = MouvementLotView::getInstance()->getByStatut(null, Lot::STATUT_MANQUEMENT_EN_ATTENTE)->rows;
 

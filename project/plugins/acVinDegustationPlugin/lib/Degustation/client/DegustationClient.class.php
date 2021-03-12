@@ -42,6 +42,25 @@ class DegustationClient extends acCouchdbClient {
         return $this->startkey(self::TYPE_COUCHDB."Z")->endkey(self::TYPE_COUCHDB)->descending(true)->limit($limit)->execute($hydrate);
     }
 
+	public function getLotsPrelevables() {
+	    $lots = array();
+	    foreach (MouvementLotView::getInstance()->getByStatut(Lot::STATUT_AFFECTABLE)->rows as $mouvement) {
+	        $lot = MouvementLotView::generateLotByMvt($mouvement);
+	        $lots[$key] = $lot;
+	    }
+        uasort($lots, function ($lot1, $lot2) {
+            $date1 = DateTime::createFromFormat('Y-m-d', $lot1->date);
+            $date2 = DateTime::createFromFormat('Y-m-d', $lot2->date);
+
+            if ($date1 == $date2) {
+                return 0;
+            }
+            return ($date1 < $date2) ? -1 : 1;
+        });
+
+        return $lots;
+	}
+
     public static function getNumeroTableStr($numero_table){
       $alphas = range('A', 'Z');
       return $alphas[$numero_table-1];

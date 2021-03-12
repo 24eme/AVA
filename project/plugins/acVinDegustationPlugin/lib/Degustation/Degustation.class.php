@@ -160,7 +160,7 @@ class Degustation extends BaseDegustation implements InterfacePieceDocument, Int
 		$infos["nbLots"] = count($this->getLots());
 		$infos["nbLotsLeurre"] = count($this->getLots()) - count($this->getLotsWithoutLeurre());;
 		$infos["nbLotsSansLeurre"] = count($this->getLotsWithoutLeurre());
-		$infos['nbLotsPrelevable'] = count($this->getLotsPrelevables());
+		$infos['nbLotsPrelevable'] = count(DegustationClient::getInstance()->getLotsPrelevables());
 		$infos['nbLotsRestantAPrelever'] = $this->getNbLotsRestantAPreleve();
 		$infos['nbLotsPreleves'] = $this->getNbLotsPreleves();
 		$infos['nbLotsPrelevesSansLeurre'] = $this->getNbLotsPreleves() - $infos["nbLotsLeurre"];
@@ -338,49 +338,6 @@ class Degustation extends BaseDegustation implements InterfacePieceDocument, Int
 
     public static function isPieceEditable($admin = false) {
     	return false;
-    }
-
-	public function getMvtLotsPrelevables() {
-         $mvt = array();
-         foreach (MouvementLotView::getInstance()->getByStatut(null, Lot::STATUT_AFFECTABLE)->rows as $item) {
-             $mvt[Lot::generateMvtKey($item->value)] = $item->value;
-		 }
-		 ksort($mvt);
-		 return $mvt;
-	 }
-
-	public function getLotsPrelevables() {
-	    $lots = array();
-	    foreach ($this->getMvtLotsPrelevables() as $key => $mvt) {
-	        $lot = MouvementLotView::generateLotByMvt($mvt);
-	        $lots[$key] = $lot;
-	    }
-			return $lots;
-	}
-
-	public function getLotsPrelevablesByProvenance($provenance) {
-			$lots = array();
-			foreach ($this->getMvtLotsPrelevables() as $key => $mvt) {
-					$lot = MouvementLotView::generateLotByMvt($mvt);
-					if(preg_match("/$provenance/", $lot->id_document) == 1){
-						$lots[$key] = $lot;
-					}
-			}
-			return $lots;
-	}
-
-	public function getLotsPrelevablesSortByDate($provenance = false) {
-		$lots = $provenance != false ? $this->getLotsPrelevablesByProvenance($provenance) : $this->getLotsPrelevables();
-        uasort($lots, function ($lot1, $lot2) {
-            $date1 = DateTime::createFromFormat('Y-m-d', $lot1->date);
-            $date2 = DateTime::createFromFormat('Y-m-d', $lot2->date);
-
-            if ($date1 == $date2) {
-                return 0;
-            }
-            return ($date1 < $date2) ? -1 : 1;
-        });
-        return $lots;
     }
 
 	 public function setLotsFromMvtKeys($keys, $statut){

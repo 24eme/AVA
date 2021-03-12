@@ -45,7 +45,7 @@
 		<tbody>
 		<?php
             $dates = $form->getDateDegustParDrev();
-			foreach ($form->getLotsPrelevables() as $key => $lot):
+			foreach (DegustationClient::getInstance()->getLotsPrelevables() as $key => $lot):
 			if (isset($form['lots'][$key])):
 		?>
 			<tr class="vertical-center cursor-pointer" data-adherent="<?php echo $lot->numero_dossier; ?>">

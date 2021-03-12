@@ -17,7 +17,7 @@ class DegustationPrelevementLotsForm extends acCouchdbObjectForm {
     }
 
     public function configure() {
-        $this->lotsPrelevables = $this->getLotsPrelevables();
+        $this->lotsPrelevables = DegustationClient::getInstance()->getLotsPrelevables();
         $formLots = new BaseForm();
         foreach ($this->lotsPrelevables as $key => $item) {
             $formLots->embedForm($key, new DegustationPrelevementLotForm());
@@ -74,10 +74,6 @@ class DegustationPrelevementLotsForm extends acCouchdbObjectForm {
             }
         }
         $this->setDefaults($defaults);
-    }
-
-    public function getLotsPrelevables() {
-        return $this->getObject()->getLotsPrelevablesSortByDate($this->object->provenance);
     }
 
     public function getDateDegustation()
