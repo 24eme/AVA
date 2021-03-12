@@ -440,11 +440,11 @@ class drevActions extends sfActions {
         }
 
         $lot = $this->drev->getLotByNumArchive($request->getParameter('numArchive'));
-        $lotCheck = MouvementLotView::getInstance()->getDegustationMouvementLot($this->drev->identifiant, $lot->numero_archive, $this->drev->campagne);
-        if($lotCheck){
-          throw new sfException("le lot de numero d'archive ".$request->getParameter('numArchive').
-          " ne peut pas être supprimé car associé à un document son id :\n".$lotCheck->id_document);
-        }
+        // $lotCheck = MouvementLotView::getInstance()->getDegustationMouvementLot($this->drev->identifiant, $lot->numero_archive, $this->drev->campagne);
+        // if($lotCheck){
+        //   throw new sfException("le lot de numero d'archive ".$request->getParameter('numArchive').
+        //   " ne peut pas être supprimé car associé à un document son id :\n".$lotCheck->id_document);
+        // }
 
         if($lot){
             $this->drev->remove($lot->getHash());

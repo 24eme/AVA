@@ -166,11 +166,11 @@ class transactionActions extends sfActions {
         }
 
         $lot = $this->transaction->getLotByNumArchive($request->getParameter('numArchive'));
-        $lotCheck = MouvementLotView::getInstance()->getDegustationMouvementLot($this->transaction->identifiant, $lot->numero_archive, $this->transaction->campagne);
-        if($lotCheck){
-          throw new sfException("le lot de numero d'archive ".$request->getParameter('numArchive').
-          " ne peut pas être supprimé car associé à un document son id :\n".$lotCheck->id_document);
-        }
+        // $lotCheck = MouvementLotView::getInstance()->getDegustationMouvementLot($this->transaction->identifiant, $lot->numero_archive, $this->transaction->campagne);
+        // if($lotCheck){
+        //   throw new sfException("le lot de numero d'archive ".$request->getParameter('numArchive').
+        //   " ne peut pas être supprimé car associé à un document son id :\n".$lotCheck->id_document);
+        // }
 
         if($lot){
             $this->transaction->remove($lot->getHash());
