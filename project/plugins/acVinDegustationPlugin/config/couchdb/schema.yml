@@ -61,43 +61,27 @@ Degustation:
               definition:
                 fields:
                   '*':
-                    class: DegustationMouvementLots
+                    class: DRevMouvementLots
                     inheritance: MouvementLots
                     type: collection
                     definition:
                       fields:
-                        produit_hash: {  }
-                        produit_libelle: {  }
-                        produit_couleur: { }
-                        volume: { type: float }
                         date: {  }
-                        elevage: { }
-                        millesime: {  }
-                        region: {  }
                         numero_dossier: {  }
                         numero_archive: {  }
-                        numero_logement_operateur: {  }
+                        libelle: {}
+                        detail: {}
+                        region: {}
                         version: {  }
-                        origine_hash: {  }
-                        origine_type: {  }
-                        origine_document_id: {  }
-                        origine_mouvement: {  }
+                        document_ordre: {  }
+                        document_type: {  }
+                        document_id: {  }
+                        lot_unique_id: {  }
+                        lot_hash: {  }
                         declarant_identifiant: {  }
                         declarant_nom: {  }
-                        destination_type: { }
-                        destination_date: { }
-                        details: {}
-                        region: {}
                         campagne: {}
-                        id_document: {  }
-                        statut: {  }
-                        specificite: {}
-                        centilisation: { }
-                        conformite: {}
-                        motif: {}
-                        nombre_degustation: {required: false}
-                        doc_ordre: {}
-                        affectable: {}
+                        statut: {}
       degustateurs:
         type: collection
         definition:
