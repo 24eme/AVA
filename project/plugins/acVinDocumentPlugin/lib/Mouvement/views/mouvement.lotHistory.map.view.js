@@ -10,9 +10,9 @@ function (doc) {
         mouvement.declarant_identifiant,
         mouvement.numero_dossier,
         mouvement.numero_archive,
-        mouvement.doc_ordre,
+        mouvement.document_ordre,
         mouvement.statut,
-        mouvement.origine_document_id
+        mouvement.document_id
       ], mouvement);
     }
   }
